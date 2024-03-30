@@ -26,15 +26,6 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 //connectFirestoreEmulator(db, 'localhost', 8080); // emulator
 
-
-// live
-// https://la-boussole-vancouver.web.app/
-
-// todo
-// display instead of console ?
-// editable Data Table Component
-// auth : https://firebase.google.com/docs/web/setup
-
 // Get a list of articles from your database
 async function getArticles(db) {
   const articlesCol = collection(db, 'articles');
