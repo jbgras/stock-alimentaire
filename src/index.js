@@ -7,8 +7,6 @@ import reportWebVitals from './reportWebVitals';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, getDocs, connectFirestoreEmulator } from 'firebase/firestore/lite';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -26,11 +24,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
+//connectFirestoreEmulator(db, 'localhost', 8080); // emulator
 
-// emulator
-//connectFirestoreEmulator(db, 'localhost', 8080);
-// firebase emulators:start
-// firebase deploy --only hosting:la-boussole-vancouver
 
 // live
 // https://la-boussole-vancouver.web.app/
@@ -38,12 +33,6 @@ const db = getFirestore(app);
 // todo
 // display instead of console ?
 // editable Data Table Component
-// firebase experiments:enable webframeworks
-// gitops / github pull request
-//    - deploy yaml https://stackoverflow.com/questions/74426925/how-can-run-firebase-experimentsenable-webframeworks-with-github-actions
-//    - github action https://firebase.google.com/docs/hosting/github-integration
-//    - https://www.freecodecamp.org/news/how-to-deploy-a-react-app-with-firebase/
-//    - https://firebase.google.com/docs/hosting/quickstart?hl=en&authuser=0
 // auth : https://firebase.google.com/docs/web/setup
 
 // Get a list of articles from your database
