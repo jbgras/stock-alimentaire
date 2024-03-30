@@ -1,0 +1,23 @@
+{
+  "emulators": {
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  },
+  "hosting": {
+      "source": "src"
+      // uncomment for emulator
+      // "version": "13.6.0",
+      // "origins": [
+      //     "http://127.0.0.1:4400"
+      // ]
+      // "host": "127.0.0.1",
+      // "port": 4400
+  }
+}
+
+
