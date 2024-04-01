@@ -9,7 +9,6 @@ import {
   CircularProgress,
   IconButton,
   Tooltip,
-  Typography,
 } from '@mui/material';
 import {
   QueryClient,
@@ -23,14 +22,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const Inventory = () => {
   const [articles, setArticles] = useState([]);
-  const [validationErrors, setValidationErrors] = useState({});
   const [editedUsers, setEditedUsers] = useState({});   //keep track of rows that have been edited
   useEffect(() => {
     const getArticles = async () => {
       // const articlesCol = collection(db, 'articles');
       // const articlesSnapshot = await getDocs(articlesCol);
       // const articlesList = articlesSnapshot.docs.map(doc => doc.data());
-      const articlesList = [{'UMC':'12345'}];
+      const articlesList = [{ 'UMC': '12345' }];
       setArticles(articlesList);
     }
     getArticles();
@@ -49,17 +47,7 @@ const Inventory = () => {
         header: 'Description',
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'text',
-          required: true,
-          error: !!validationErrors?.[cell.UMC],
-          helperText: validationErrors?.[cell.UMC],
           onBlur: (event) => {
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.UMC]: validationError,
-            });
             setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
           },
         }),
@@ -69,17 +57,7 @@ const Inventory = () => {
         header: 'Date Entrée',
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'date',
-          required: true,
-          error: !!validationErrors?.[cell.UMC],
-          helperText: validationErrors?.[cell.UMC],
           onBlur: (event) => {
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.UMC]: validationError,
-            });
             setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
           },
         }),
@@ -89,17 +67,7 @@ const Inventory = () => {
         header: 'Meilleur avant',
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'date',
-          required: true,
-          error: !!validationErrors?.[cell.UMC],
-          helperText: validationErrors?.[cell.UMC],
           onBlur: (event) => {
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.UMC]: validationError,
-            });
             setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
           },
         }),
@@ -109,23 +77,12 @@ const Inventory = () => {
         header: 'Utilisateur',
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'text',
-          required: true,
-          error: !!validationErrors?.[cell.UMC],
-          helperText: validationErrors?.[cell.UMC],
           onBlur: (event) => {
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.user]: validationError,
-            });
             setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
           },
         }),
       },
     ],
-    [editedUsers, validationErrors],
   );
 
   //call CREATE hook
@@ -147,19 +104,12 @@ const Inventory = () => {
 
   //CREATE action
   const handleCreateUser = async ({ values, table }) => {
-    const newValidationErrors = validateUser(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
     await createUser(values);
     table.setCreatingRow(null); //exit creating mode
   };
 
   //UPDATE action
   const handleSaveUsers = async () => {
-    if (Object.values(validationErrors).some((error) => !!error)) return;
     await updateUsers(Object.values(editedUsers));
     setEditedUsers({});
   };
@@ -182,16 +132,15 @@ const Inventory = () => {
     getRowId: (row) => row.UMC,
     muiToolbarAlertBannerProps: isLoadingUsersError
       ? {
-          color: 'error',
-          children: 'Error loading data',
-        }
+        color: 'error',
+        children: 'Erreur chargement des données',
+      }
       : undefined,
     muiTableContainerProps: {
       sx: {
         minHeight: '500px',
       },
     },
-    onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUser,
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
@@ -209,25 +158,21 @@ const Inventory = () => {
           variant="contained"
           onClick={handleSaveUsers}
           disabled={
-            Object.keys(editedUsers).length === 0 ||
-            Object.values(validationErrors).some((error) => !!error)
+            Object.keys(editedUsers).length === 0
           }
         >
-          {isUpdatingUsers ? <CircularProgress size={25} /> : 'Save'}
+          {isUpdatingUsers ? <CircularProgress size={25} /> : 'Enregistrer'}
         </Button>
-        {Object.values(validationErrors).some((error) => !!error) && (
-          <Typography color="error">Fix errors before submitting</Typography>
-        )}
       </Box>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
         variant="contained"
         onClick={() => {
-          table.setCreatingRow(true); 
+          table.setCreatingRow(true);
         }}
       >
-        Create New User
+        Créer un nouvel article
       </Button>
     ),
     state: {
@@ -317,22 +262,12 @@ function useDeleteUser() {
 
 const queryClient = new QueryClient();
 
-const InventoryWithProviders = () => (
-  //Put this with your other react-query providers near root of your app
-  <QueryClientProvider client={queryClient}>
-    <Inventory />
-  </QueryClientProvider>
-);
+const InventoryWithProviders = () =>
+  (
+    //Put this with your other react-query providers near root of your app
+    <QueryClientProvider client={queryClient}>
+        <Inventory />
+    </QueryClientProvider>
+  );
 
 export default InventoryWithProviders;
-
-const validateRequired = (value) => !!value.length;
-
-function validateUser(user) {
-  return {
-    description: !validateRequired(user.description)
-      ? 'description est obligatoire'
-      : '',
-    entryDate: !validateRequired(user.entryDate) ? 'Last Name is Required' : '',
-  };
-}

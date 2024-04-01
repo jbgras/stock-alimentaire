@@ -3,9 +3,9 @@ import Inventory from './Inventory.js';
 import React from 'react';
 
 function App() {
-  return ( 
+  return (
     <div className="App">
-      <Inventory/>
+      <Inventory />
     </div>
   );
 }
