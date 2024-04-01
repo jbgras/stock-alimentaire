@@ -1,89 +1,77 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "./data.js";
 import {
   MaterialReactTable,
   useMaterialReactTable,
-} from 'material-react-table';
+} from "material-react-table";
 import {
   Box,
   Button,
   CircularProgress,
   IconButton,
   Tooltip,
-} from '@mui/material';
+} from "@mui/material";
 import {
   QueryClient,
   QueryClientProvider,
   useMutation,
   useQuery,
   useQueryClient,
-} from '@tanstack/react-query';
-import { fakeData } from './data';
-import DeleteIcon from '@mui/icons-material/Delete';
+} from "@tanstack/react-query";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Inventory = () => {
-  const [articles, setArticles] = useState([]);
-  const [editedUsers, setEditedUsers] = useState({});   //keep track of rows that have been edited
-  useEffect(() => {
-    const getArticles = async () => {
-      // const articlesCol = collection(db, 'articles');
-      // const articlesSnapshot = await getDocs(articlesCol);
-      // const articlesList = articlesSnapshot.docs.map(doc => doc.data());
-      const articlesList = [{ 'UMC': '12345' }];
-      setArticles(articlesList);
-    }
-    getArticles();
-  }, []);
-
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'UMC',
-        header: 'UMC',
-        enableEditing: false,
-        size: 80,
-      },
-      {
-        accessorKey: 'description',
-        header: 'Description',
-        muiEditTextFieldProps: ({ cell, row }) => ({
-          type: 'text',
-          onBlur: (event) => {
-            setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
-          },
-        }),
-      },
-      {
-        accessorKey: 'entryDate',
-        header: 'Date Entrée',
-        muiEditTextFieldProps: ({ cell, row }) => ({
-          type: 'date',
-          onBlur: (event) => {
-            setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
-          },
-        }),
-      },
-      {
-        accessorKey: 'bestBefore',
-        header: 'Meilleur avant',
-        muiEditTextFieldProps: ({ cell, row }) => ({
-          type: 'date',
-          onBlur: (event) => {
-            setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
-          },
-        }),
-      },
-      {
-        accessorKey: 'user',
-        header: 'Utilisateur',
-        muiEditTextFieldProps: ({ cell, row }) => ({
-          type: 'text',
-          onBlur: (event) => {
-            setEditedUsers({ ...editedUsers, [row.UMC]: row.original });
-          },
-        }),
-      },
-    ],
-  );
+  const [editedUsers, setEditedUsers] = useState({});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const columns = useMemo(() => [
+    {
+      accessorKey: "GTIN",
+      header: "GTIN",
+      enableEditing: false,
+      size: 80,
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "entryDate",
+      header: "Date Entrée",
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "date",
+        onBlur: (event) => {
+          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "bestBefore",
+      header: "Meilleur avant",
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "date",
+        onBlur: (event) => {
+          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "user",
+      header: "Utilisateur",
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+        },
+      }),
+    },
+  ]);
 
   //call CREATE hook
   const { mutateAsync: createUser, isPending: isCreatingUser } =
@@ -116,34 +104,34 @@ const Inventory = () => {
 
   //DELETE action
   const openDeleteConfirmModal = (row) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      deleteUser(row.original.UMC);
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      deleteUser(row.original.GTIN);
     }
   };
 
   const table = useMaterialReactTable({
     columns,
     data: fetchedUsers,
-    createDisplayMode: 'row', // ('modal', and 'custom' are also available)
-    editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
+    createDisplayMode: "row", // ('modal', and 'custom' are also available)
+    editDisplayMode: "table", // ('modal', 'row', 'cell', and 'custom' are also
     enableEditing: true,
     enableRowActions: true,
-    positionActionsColumn: 'last',
-    getRowId: (row) => row.UMC,
+    positionActionsColumn: "last",
+    getRowId: (row) => row.GTIN,
     muiToolbarAlertBannerProps: isLoadingUsersError
       ? {
-        color: 'error',
-        children: 'Erreur chargement des données',
-      }
+          color: "error",
+          children: "Erreur chargement des données",
+        }
       : undefined,
     muiTableContainerProps: {
       sx: {
-        minHeight: '500px',
+        minHeight: "500px",
       },
     },
     onCreatingRowSave: handleCreateUser,
     renderRowActions: ({ row }) => (
-      <Box sx={{ display: 'flex', gap: '1rem' }}>
+      <Box sx={{ display: "flex", gap: "1rem" }}>
         <Tooltip title="Delete">
           <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
             <DeleteIcon />
@@ -152,16 +140,14 @@ const Inventory = () => {
       </Box>
     ),
     renderBottomToolbarCustomActions: () => (
-      <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <Box sx={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         <Button
           color="success"
           variant="contained"
           onClick={handleSaveUsers}
-          disabled={
-            Object.keys(editedUsers).length === 0
-          }
+          disabled={Object.keys(editedUsers).length === 0}
         >
-          {isUpdatingUsers ? <CircularProgress size={25} /> : 'Enregistrer'}
+          {isUpdatingUsers ? <CircularProgress size={25} /> : "Enregistrer"}
         </Button>
       </Box>
     ),
@@ -197,7 +183,7 @@ function useCreateUser() {
     },
     //client side optimistic update
     onMutate: (newUserInfo) => {
-      queryClient.setQueryData(['users'], (prevUsers) => [
+      queryClient.setQueryData(["users"], (prevUsers) => [
         ...prevUsers,
         {
           ...newUserInfo,
@@ -211,16 +197,17 @@ function useCreateUser() {
 //READ hook (get users from api)
 function useGetUsers() {
   return useQuery({
-    queryKey: ['users'],
+    queryKey: ["users"],
     queryFn: async () => {
-      //send api request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve(fakeData);
+      const inventoryCol = collection(db, "articles");
+      const inventorySnapshot = await getDocs(inventoryCol);
+      let inventoryList = inventorySnapshot.docs.map((doc) => doc.data());
+      console.log("inventory\n" + JSON.stringify(inventoryList) + "\n");
+      return Promise.resolve(inventoryList);
     },
     refetchOnWindowFocus: false,
   });
 }
-
 //UPDATE hook (put user in api)
 function useUpdateUsers() {
   const queryClient = useQueryClient();
@@ -232,11 +219,11 @@ function useUpdateUsers() {
     },
     //client side optimistic update
     onMutate: (newUsers) => {
-      queryClient.setQueryData(['users'], (prevUsers) =>
+      queryClient.setQueryData(["users"], (prevUsers) =>
         prevUsers?.map((user) => {
-          const newUser = newUsers.find((u) => u.UMC === user.UMC);
+          const newUser = newUsers.find((u) => u.GTIN === user.GTIN);
           return newUser ? newUser : user;
-        }),
+        })
       );
     },
   });
@@ -253,8 +240,8 @@ function useDeleteUser() {
     },
     //client side optimistic update
     onMutate: (userId) => {
-      queryClient.setQueryData(['users'], (prevUsers) =>
-        prevUsers?.filter((user) => user.UMC !== userId),
+      queryClient.setQueryData(["users"], (prevUsers) =>
+        prevUsers?.filter((user) => user.GTIN !== userId)
       );
     },
   });
@@ -262,12 +249,10 @@ function useDeleteUser() {
 
 const queryClient = new QueryClient();
 
-const InventoryWithProviders = () =>
-  (
-    //Put this with your other react-query providers near root of your app
-    <QueryClientProvider client={queryClient}>
-        <Inventory />
-    </QueryClientProvider>
-  );
+const InventoryWithProviders = () => (
+  <QueryClientProvider client={queryClient}>
+    <Inventory />
+  </QueryClientProvider>
+);
 
 export default InventoryWithProviders;
