@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./data.js";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -12,22 +10,22 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  useCreateArticle,
+  useGetArticles,
+  useUpdateArticles,
+  useDeleteArticle,
+} from "./data.js";
 
 const Inventory = () => {
-  const [editedUsers, setEditedUsers] = useState({});
+  const [editedArticles, setEditedArticles] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const columns = useMemo(() => [
     {
-      accessorKey: "GTIN",
-      header: "GTIN",
+      accessorKey: "SKU",
+      header: "Référence",
       enableEditing: false,
       size: 80,
     },
@@ -37,7 +35,7 @@ const Inventory = () => {
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "text",
         onBlur: (event) => {
-          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
         },
       }),
     },
@@ -47,17 +45,17 @@ const Inventory = () => {
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "date",
         onBlur: (event) => {
-          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
         },
       }),
     },
     {
-      accessorKey: "bestBefore",
-      header: "Meilleur avant",
+      accessorKey: "quantity",
+      header: "Quantité",
       muiEditTextFieldProps: ({ cell, row }) => ({
-        type: "date",
+        type: "number",
         onBlur: (event) => {
-          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
         },
       }),
     },
@@ -67,58 +65,58 @@ const Inventory = () => {
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "text",
         onBlur: (event) => {
-          setEditedUsers({ ...editedUsers, [row.GTIN]: row.original });
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
         },
       }),
     },
   ]);
 
   //call CREATE hook
-  const { mutateAsync: createUser, isPending: isCreatingUser } =
-    useCreateUser();
+  const { mutateAsync: createArticle, isPending: isCreatingArticle } =
+    useCreateArticle();
   //call READ hook
   const {
-    data: fetchedUsers = [],
-    isError: isLoadingUsersError,
-    isFetching: isFetchingUsers,
-    isLoading: isLoadingUsers,
-  } = useGetUsers();
+    data: fetchedArticles = [],
+    isError: isLoadingArticlesError,
+    isFetching: isFetchingArticles,
+    isLoading: isLoadingArticles,
+  } = useGetArticles();
   //call UPDATE hook
-  const { mutateAsync: updateUsers, isPending: isUpdatingUsers } =
-    useUpdateUsers();
+  const { mutateAsync: updateArticles, isPending: isUpdatingArticles } =
+    useUpdateArticles();
   //call DELETE hook
-  const { mutateAsync: deleteUser, isPending: isDeletingUser } =
-    useDeleteUser();
+  const { mutateAsync: deleteArticle, isPending: isDeletingArticle } =
+    useDeleteArticle();
 
   //CREATE action
-  const handleCreateUser = async ({ values, table }) => {
-    await createUser(values);
+  const handleCreateArticle = async ({ values, table }) => {
+    await createArticle(values);
     table.setCreatingRow(null); //exit creating mode
   };
 
   //UPDATE action
-  const handleSaveUsers = async () => {
-    await updateUsers(Object.values(editedUsers));
-    setEditedUsers({});
+  const handleSaveArticles = async () => {
+    await updateArticles(Object.values(editedArticles));
+    setEditedArticles({});
   };
 
   //DELETE action
   const openDeleteConfirmModal = (row) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      deleteUser(row.original.GTIN);
+    if (window.confirm("Etes-vous sûr de supprimer cet article?")) {
+      deleteArticle(row.original.SKU);
     }
   };
 
   const table = useMaterialReactTable({
     columns,
-    data: fetchedUsers,
+    data: fetchedArticles,
     createDisplayMode: "row", // ('modal', and 'custom' are also available)
     editDisplayMode: "table", // ('modal', 'row', 'cell', and 'custom' are also
     enableEditing: true,
     enableRowActions: true,
     positionActionsColumn: "last",
-    getRowId: (row) => row.GTIN,
-    muiToolbarAlertBannerProps: isLoadingUsersError
+    getRowId: (row) => row.SKU,
+    muiToolbarAlertBannerProps: isLoadingArticlesError
       ? {
           color: "error",
           children: "Erreur chargement des données",
@@ -129,7 +127,7 @@ const Inventory = () => {
         minHeight: "500px",
       },
     },
-    onCreatingRowSave: handleCreateUser,
+    onCreatingRowSave: handleCreateArticle,
     renderRowActions: ({ row }) => (
       <Box sx={{ display: "flex", gap: "1rem" }}>
         <Tooltip title="Delete">
@@ -144,10 +142,10 @@ const Inventory = () => {
         <Button
           color="success"
           variant="contained"
-          onClick={handleSaveUsers}
-          disabled={Object.keys(editedUsers).length === 0}
+          onClick={handleSaveArticles}
+          disabled={Object.keys(editedArticles).length === 0}
         >
-          {isUpdatingUsers ? <CircularProgress size={25} /> : "Enregistrer"}
+          {isUpdatingArticles ? <CircularProgress size={25} /> : "Enregistrer"}
         </Button>
       </Box>
     ),
@@ -162,90 +160,15 @@ const Inventory = () => {
       </Button>
     ),
     state: {
-      isLoading: isLoadingUsers,
-      isSaving: isCreatingUser || isUpdatingUsers || isDeletingUser,
-      showAlertBanner: isLoadingUsersError,
-      showProgressBars: isFetchingUsers,
+      isLoading: isLoadingArticles,
+      isSaving: isCreatingArticle || isUpdatingArticles || isDeletingArticle,
+      showAlertBanner: isLoadingArticlesError,
+      showProgressBars: isFetchingArticles,
     },
   });
 
   return <MaterialReactTable table={table} />;
 };
-
-//CREATE hook (post new user to api)
-function useCreateUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (user) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newUserInfo) => {
-      queryClient.setQueryData(["users"], (prevUsers) => [
-        ...prevUsers,
-        {
-          ...newUserInfo,
-          id: (Math.random() + 1).toString(36).substring(7),
-        },
-      ]);
-    },
-  });
-}
-
-//READ hook (get users from api)
-function useGetUsers() {
-  return useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const inventoryCol = collection(db, "articles");
-      const inventorySnapshot = await getDocs(inventoryCol);
-      let inventoryList = inventorySnapshot.docs.map((doc) => doc.data());
-      console.log("inventory\n" + JSON.stringify(inventoryList) + "\n");
-      return Promise.resolve(inventoryList);
-    },
-    refetchOnWindowFocus: false,
-  });
-}
-//UPDATE hook (put user in api)
-function useUpdateUsers() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (users) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newUsers) => {
-      queryClient.setQueryData(["users"], (prevUsers) =>
-        prevUsers?.map((user) => {
-          const newUser = newUsers.find((u) => u.GTIN === user.GTIN);
-          return newUser ? newUser : user;
-        })
-      );
-    },
-  });
-}
-
-//DELETE hook (delete user in api)
-function useDeleteUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (userId) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (userId) => {
-      queryClient.setQueryData(["users"], (prevUsers) =>
-        prevUsers?.filter((user) => user.GTIN !== userId)
-      );
-    },
-  });
-}
 
 const queryClient = new QueryClient();
 
