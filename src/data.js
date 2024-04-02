@@ -47,14 +47,17 @@ export function useGetArticles() {
       const inventoryCol = collection(db, "articles");
       const inventorySnapshot = await getDocs(inventoryCol);
       let inventoryList = inventorySnapshot.docs.map((doc) => {
+        const inventory = doc.data();
+
         return {
-          ...doc.data(),
-          entryDate: new Date(doc.entryDate.seconds * 1000),
-          // entryDate: doc.entryDate.toDate(),
+          ...inventory,
+          entryDate: !!inventory.entryDate
+            ? new Date(inventory.entryDate.seconds * 1000)
+                .toISOString()
+                .substring(0, 10)
+            : null,
         };
       });
-
-      console.log("inventory\n" + JSON.stringify(inventoryList) + "\n");
       return inventoryList;
     },
     refetchOnWindowFocus: false,

@@ -8,5 +8,5 @@
 
 - [add authent](https://firebase.google.com/docs/web/setup)(https://firebase.google.com/docs/firestore/security/overview)
 - [gui compliance](https://lbv.ca/)
-- exception error message not displayed
 - add all CRUD operations
+- exception error message not displayed
