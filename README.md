@@ -6,13 +6,8 @@
 
 # Todo
 
-- switch back CRA
-- [add authent]
-  (https://firebase.google.com/docs/auth/web/google-signin#handling-account-exists-with-different-credential-errors)
-  (https://firebase.google.com/docs/firestore/security/get-started)
-  (https://github.com/firebase/firebaseui-web?tab=readme-ov-file)
-- DB security rules : add auth R/W, limit 10 appels/s & 1000/j
-- [gui compliance](https://lbv.ca/)
-- export excel
+- css & img boussole
 - add all CRUD operations
+- export excel
 - exception error message not displayed
+- limit i.e 10 call/s & 1000/day

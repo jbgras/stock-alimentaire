@@ -11,9 +11,7 @@ const auth = getAuth(app);
 
 export async function signIn() {
   const result = await getRedirectResult(auth);
-  if (result) {
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-  } else {
+  if (!result) {
     await signInWithRedirect(auth, provider);
   }
 }
