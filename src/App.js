@@ -1,13 +1,13 @@
-import './App.css';
-import Inventory from './Inventory.js';
-import React from 'react';
+import "./App.css";
+import Inventory from "./Inventory.js";
+import React, { useEffect } from "react";
+import { signIn } from "./auth.js";
 
 function App() {
-  return (
-    <div className="App">
-      <Inventory />
-    </div>
-  );
+  useEffect(() => {
+    signIn();
+  }, []);
+  return <div className="App">{/* <Inventory /> */}</div>;
 }
 
 export default App;

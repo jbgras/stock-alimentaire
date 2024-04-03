@@ -13,7 +13,7 @@ const firebaseConfig = {
   measurementId: "G-8CXML2B1VH",
 };
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 //connectFirestoreEmulator(db, 'localhost', 8080); // emulator
 
