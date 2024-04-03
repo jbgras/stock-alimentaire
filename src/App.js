@@ -7,7 +7,7 @@ function App() {
   useEffect(() => {
     signIn();
   }, []);
-  return <div className="App">{/* <Inventory /> */}</div>;
+  return <div className="App">{<Inventory />}</div>;
 }
 
 export default App;
