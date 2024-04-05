@@ -6,7 +6,6 @@
 
 # Todo
 
-- css & img boussole
 - add all CRUD operations
 - export excel
 - exception error message not displayed
