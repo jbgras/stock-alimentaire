@@ -5,9 +5,32 @@ import { signIn } from "./auth.js";
 
 function App() {
   useEffect(() => {
-    signIn();
+    // signIn();
   }, []);
-  return <div className="App">{<Inventory />}</div>;
+
+  function header() {
+    return (
+      <header>
+        <div>
+          <img
+            decoding="async"
+            width="5%"
+            height="5%"
+            src="Logo-LBV-Tagline-White.png"
+            style={{ textAlign: "left" }}
+          />
+          <h3>Stock alimentaire</h3>
+        </div>
+      </header>
+    );
+  }
+
+  return (
+    <div className="App">
+      {header()}
+      {<Inventory />}
+    </div>
+  );
 }
 
 export default App;
