@@ -5,7 +5,7 @@ import { signIn } from "./auth.js";
 
 function App() {
   useEffect(() => {
-    // signIn();
+    signIn();
   }, []);
 
   function header() {
