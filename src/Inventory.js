@@ -27,11 +27,6 @@ const csvConfig = mkConfig({
   useKeysAsHeaders: true,
 });
 
-const handleExportData = () => {
-  // const csv = generateCsv(csvConfig)(data);
-  // download(csvConfig)(csv);
-};
-
 const Inventory = () => {
   const [editedArticles, setEditedArticles] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -193,6 +188,7 @@ const Inventory = () => {
     isFetching: isFetchingArticles,
     isLoading: isLoadingArticles,
   } = useGetArticles();
+
   //call UPDATE hook
   const { mutateAsync: updateArticles, isPending: isUpdatingArticles } =
     useUpdateArticles();
@@ -279,12 +275,10 @@ const Inventory = () => {
           Créer un nouvel article
         </Button>
         <Button
-          //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
-
-          onClick={handleExportData}
+          onClick={() => handleExportData(fetchedArticles)}
           startIcon={<FileDownloadIcon />}
         >
-          Export All Data
+          Export excel
         </Button>{" "}
       </Box>
     ),
@@ -297,6 +291,11 @@ const Inventory = () => {
   });
 
   return <MaterialReactTable table={table} />;
+};
+
+const handleExportData = (data) => {
+  const csv = generateCsv(csvConfig)(data);
+  download(csvConfig)(csv);
 };
 
 const queryClient = new QueryClient();
