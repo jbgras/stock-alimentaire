@@ -6,7 +6,9 @@
 
 # Todo
 
-- add all CRUD operations
-- export excel
-- exception error message not displayed
-- limit i.e 10 call/s & 1000/day
+- finalize export CSV https://www.material-react-table.com/docs/examples/export-csv
+- add 1 row in DB
+- fix redirect
+- DELETE
+- UPDATE
+- CREATE

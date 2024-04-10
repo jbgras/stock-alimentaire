@@ -36,8 +36,13 @@ export function useGetArticles() {
 
         return {
           ...inventory,
-          entryDate: !!inventory.entryDate
-            ? new Date(inventory.entryDate.seconds * 1000)
+          Expiration_BB: !!inventory.Expiration_BB
+            ? new Date(inventory.Expiration_BB.seconds * 1000)
+                .toISOString()
+                .substring(0, 10)
+            : null,
+          RecuLe: !!inventory.RecuLe
+            ? new Date(inventory.RecuLe.seconds * 1000)
                 .toISOString()
                 .substring(0, 10)
             : null,

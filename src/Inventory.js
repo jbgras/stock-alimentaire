@@ -12,26 +12,58 @@ import {
 } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import {
   useCreateArticle,
   useGetArticles,
   useUpdateArticles,
   useDeleteArticle,
 } from "./data.js";
+import { mkConfig, generateCsv, download } from "export-to-csv";
+
+const csvConfig = mkConfig({
+  fieldSeparator: ",",
+  decimalSeparator: ".",
+  useKeysAsHeaders: true,
+});
+
+const handleExportData = () => {
+  // const csv = generateCsv(csvConfig)(data);
+  // download(csvConfig)(csv);
+};
 
 const Inventory = () => {
   const [editedArticles, setEditedArticles] = useState({});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const columns = useMemo(() => [
     {
-      accessorKey: "SKU",
-      header: "Référence",
-      enableEditing: false,
-      size: 80,
+      accessorKey: "TypeDeProduit",
+      header: "Type de produit",
+      size: 200,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        multiline: true,
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
     },
     {
-      accessorKey: "description",
-      header: "Description",
+      accessorKey: "CodeUPC_QR",
+      header: "Code UPC/QR",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        multiline: true,
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Location",
+      header: "Location",
+      size: 50,
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "text",
         onBlur: (event) => {
@@ -40,8 +72,42 @@ const Inventory = () => {
       }),
     },
     {
-      accessorKey: "entryDate",
-      header: "Date Entrée",
+      accessorKey: "Boite",
+      header: "Boîte #",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Format",
+      header: "Format",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Quantite",
+      header: "Quantité",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Expiration_BB",
+      header: "Expiration/BB",
+      size: 50,
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "date",
         onBlur: (event) => {
@@ -50,18 +116,64 @@ const Inventory = () => {
       }),
     },
     {
-      accessorKey: "quantity",
-      header: "Quantité",
+      accessorKey: "Valeur",
+      header: "Valeur",
+      size: 50,
       muiEditTextFieldProps: ({ cell, row }) => ({
-        type: "number",
+        type: "text",
         onBlur: (event) => {
           setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
         },
       }),
     },
     {
-      accessorKey: "user",
-      header: "Utilisateur",
+      accessorKey: "ValeurTotale",
+      header: "Valeur totale",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Categorie",
+      header: "Catégorie",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "Statut",
+      header: "Statut",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "text",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "RecuLe",
+      header: "Reçu le",
+      size: 50,
+      muiEditTextFieldProps: ({ cell, row }) => ({
+        type: "date",
+        onBlur: (event) => {
+          setEditedArticles({ ...editedArticles, [row.SKU]: row.original });
+        },
+      }),
+    },
+    {
+      accessorKey: "De",
+      header: "De",
+      size: 50,
       muiEditTextFieldProps: ({ cell, row }) => ({
         type: "text",
         onBlur: (event) => {
@@ -150,14 +262,31 @@ const Inventory = () => {
       </Box>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="contained"
-        onClick={() => {
-          table.setCreatingRow(true);
+      <Box
+        sx={{
+          display: "flex",
+          gap: "16px",
+          padding: "8px",
+          flexWrap: "wrap",
         }}
       >
-        Créer un nouvel article
-      </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            table.setCreatingRow(true);
+          }}
+        >
+          Créer un nouvel article
+        </Button>
+        <Button
+          //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+
+          onClick={handleExportData}
+          startIcon={<FileDownloadIcon />}
+        >
+          Export All Data
+        </Button>{" "}
+      </Box>
     ),
     state: {
       isLoading: isLoadingArticles,
