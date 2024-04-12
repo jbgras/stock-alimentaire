@@ -19,7 +19,7 @@ function App() {
             src="Logo-LBV-Tagline-White.png"
             style={{ textAlign: "left" }}
           />
-          &nbsp;&nbsp;Stock - Chez Joseph
+          &nbsp;&nbsp;Stock
         </div>
       </header>
     );
