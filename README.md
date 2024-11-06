@@ -6,7 +6,8 @@
 
 # Todo
 
+- variable apikey
+- Unit & playwright test
 - fix redirect
-- DELETE
-- UPDATE
-- CREATE
+- Write operation
+
